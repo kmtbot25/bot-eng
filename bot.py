@@ -24,28 +24,18 @@ bot = telebot.TeleBot(TELEGRAM_BOT_TOKEN)
 # Основная клавиатура
 main_markup = types.ReplyKeyboardMarkup(row_width=2, resize_keyboard=True)
 main_markup.add(
-    types.KeyboardButton('👋 Привет'),
-    types.KeyboardButton('📓 Я пропустил занятие:('),
-    types.KeyboardButton('📚 Сдать ДЗ'),
-    types.KeyboardButton('🎲 Какой у меня вариант?')
+    types.KeyboardButton('Скачать учебник'),
+    types.KeyboardButton('Практические занятия'),
+    types.KeyboardButton('Итоговый тест'),
+    types.KeyboardButton('Пройти тесты')
 )
-
-# Клавиатура для выбора ДЗ
-def get_dz_markup():
-    markup = types.InlineKeyboardMarkup(row_width=6)
-    buttons = [
-        types.InlineKeyboardButton(f"ДЗ {i}", callback_data=f'dz_{i}')
-        for i in range(1, 7)
-    ]
-    markup.add(*buttons)
-    return markup
 
 # Клавиатура для выбора темы
 def get_tema_markup():
     markup = types.InlineKeyboardMarkup()
     topics = [
-        ("Тема 1. Системы счисления", "tema_1"),
-        ("Тема 2. Алгебра логики", "tema_2"),
+        ("ПР 1", "tema_1"),
+        ("Тема 2", "tema_2"),
         ("Тема 3. Интернет", "tema_3"),
         ("Тема 4. Защита информации", "tema_4"),
         ("Тема 5. Текстовый процессор", "tema_5"),
@@ -69,29 +59,27 @@ def handle_all_messages(message):
     try:
         user_text = message.text.lower()
 
-        if 'привет' in user_text:
-            bot.send_message(message.chat.id, "И тебе привет! 😊")
+        if 'Скачать учебник' in user_text:
+            bot.send_message(message.chat.id, "Скачай учебник по ссылке: https://drive.google.com/drive/folders/1xtdAFfIx6cx53-kR5yBHthxasW5M3h7g?usp=drive_link")
 
-        elif user_text == '📓 я пропустил занятие:(':
+        elif user_text == 'Итоговый тест':
             bot.send_message(
                 message.chat.id,
-                "Выберите пропущенную тему:",
-                reply_markup=get_tema_markup()
+                "Пройди тест по ссылке: https://docs.google.com/forms/d/e/1FAIpQLSe0_EXyRZjFMBH3tMmrzoVPltpmNXgRnsSczDkFhjT5dIlbxg/viewform?usp=sf_link"
             )
 
-        elif user_text == '📚 сдать дз':
+        elif user_text == 'Практические занятия':
             bot.send_message(
                 message.chat.id,
-                "Выберите номер ДЗ:",
+                "Выберите номер ПР:",
                 reply_markup=get_dz_markup()
             )
 
-        elif user_text == '🎲 какой у меня вариант?':
-            variant = random.randint(1, 10)
+        elif user_text == 'Пройти тесты':
             bot.send_message(
                 message.chat.id,
-                f"Ваш вариант: {variant}",
-                reply_markup=main_markup
+                "Данный раздел в разработке. Скоро все появится!",
+                reply_markup=get_dz_markup()
             )
 
         else:
