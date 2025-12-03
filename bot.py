@@ -46,40 +46,46 @@ def get_tema_markup():
     return markup
 
 # === ОБРАБОТЧИКИ TELEGRAM ===
-@bot.message_handler(commands=['start'])
-def send_welcome(message):
-    bot.send_message(
-        message.chat.id,
-        "Привет! Я бот для помощи с занятиями. Выберите опцию:",
-        reply_markup=main_markup
-    )
-
 @bot.message_handler(func=lambda message: True)
 def handle_all_messages(message):
     try:
-        user_text = message.text.lower()
+        user_text = message.text  # Без .lower() для корректной работы с русским текстом
 
-        if 'Скачать учебник' in user_text:
-            bot.send_message(message.chat.id, "Скачай учебник по ссылке: https://drive.google.com/drive/folders/1xtdAFfIx6cx53-kR5yBHthxasW5M3h7g?usp=drive_link")
+        if user_text == 'Скачать учебник':
+            bot.send_message(
+                message.chat.id,
+                "Скачай учебник по ссылке: https://drive.google.com/drive/folders/1xtdAFfIx6cx53-kR5yBHthxasW5M3h7g?usp=drive_link"
+            )
+            return  # Важно добавить return после отправки сообщения
+
+        elif user_text == 'Практические занятия':
+            bot.send_message(
+                message.chat.id,
+                "Выберите номер ПР:",
+                reply_markup=get_pr_markup()
+            )
+            return
 
         elif user_text == 'Итоговый тест':
             bot.send_message(
                 message.chat.id,
                 "Пройди тест по ссылке: https://docs.google.com/forms/d/e/1FAIpQLSe0_EXyRZjFMBH3tMmrzoVPltpmNXgRnsSczDkFhjT5dIlbxg/viewform?usp=sf_link"
             )
-
-        elif user_text == 'Практические занятия':
-            bot.send_message(
-                message.chat.id,
-                "Выберите номер ПР:",
-                reply_markup=get_dz_markup()
-            )
+            return
 
         elif user_text == 'Пройти тесты':
             bot.send_message(
                 message.chat.id,
                 "Данный раздел в разработке. Скоро все появится!",
-                reply_markup=get_dz_markup()
+                reply_markup=main_markup
+            )
+            return
+
+        else:
+            bot.send_message(
+                message.chat.id,
+                "Не понял ваш запрос. Воспользуйтесь клавиатурой ниже.",
+                reply_markup=main_markup
             )
 
         else:
