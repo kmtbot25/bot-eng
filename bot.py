@@ -30,12 +30,26 @@ main_markup.add(
     types.KeyboardButton('Пройти тесты')
 )
 
-# Клавиатура для выбора темы
+# Клавиатура для выбора практических работ (ПР 1-6)
+def get_pr_markup():
+    markup = types.ReplyKeyboardMarkup(row_width=3, resize_keyboard=True)
+    markup.add(
+        types.KeyboardButton('ПР 1'),
+        types.KeyboardButton('ПР 2'),
+        types.KeyboardButton('ПР 3'),
+        types.KeyboardButton('ПР 4'),
+        types.KeyboardButton('ПР 5'),
+        types.KeyboardButton('ПР 6'),
+        types.KeyboardButton('↩️ Назад в меню')
+    )
+    return markup
+
+# Клавиатура для выбора тем
 def get_tema_markup():
     markup = types.InlineKeyboardMarkup()
     topics = [
-        ("ПР 1", "tema_1"),
-        ("Тема 2", "tema_2"),
+        ("Тема 1. Системы счисления", "tema_1"),
+        ("Тема 2. Алгебра логики", "tema_2"),
         ("Тема 3. Интернет", "tema_3"),
         ("Тема 4. Защита информации", "tema_4"),
         ("Тема 5. Текстовый процессор", "tema_5"),
@@ -49,29 +63,28 @@ def get_tema_markup():
 @bot.message_handler(func=lambda message: True)
 def handle_all_messages(message):
     try:
-        user_text = message.text  # Без .lower() для корректной работы с русским текстом
+        user_text = message.text
 
         if user_text == 'Скачать учебник':
             bot.send_message(
                 message.chat.id,
-                "Скачай учебник по ссылке: https://drive.google.com/drive/folders/1xtdAFfIx6cx53-kR5yBHthxasW5M3h7g?usp=drive_link"
+                "Скачай учебник по ссылке: https://drive.google.com/drive/folders/1xtdAFfIx6cx53-kR5yBHthxasW5M3h7g?usp=drive_link",
+                reply_markup=main_markup
             )
-            return  # Важно добавить return после отправки сообщения
 
         elif user_text == 'Практические занятия':
             bot.send_message(
                 message.chat.id,
-                "Выберите номер ПР:",
+                "Выберите номер практической работы (ПР):",
                 reply_markup=get_pr_markup()
             )
-            return
 
         elif user_text == 'Итоговый тест':
             bot.send_message(
                 message.chat.id,
-                "Пройди тест по ссылке: https://docs.google.com/forms/d/e/1FAIpQLSe0_EXyRZjFMBH3tMmrzoVPltpmNXgRnsSczDkFhjT5dIlbxg/viewform?usp=sf_link"
+                "Пройди тест по ссылке: https://docs.google.com/forms/d/e/1FAIpQLSe0_EXyRZjFMBH3tMmrzoVPltpmNXgRnsSczDkFhjT5dIlbxg/viewform?usp=sf_link",
+                reply_markup=main_markup
             )
-            return
 
         elif user_text == 'Пройти тесты':
             bot.send_message(
@@ -79,12 +92,37 @@ def handle_all_messages(message):
                 "Данный раздел в разработке. Скоро все появится!",
                 reply_markup=main_markup
             )
-            return
 
-        else:
+        # Обработка кнопок с практическими работами
+        elif user_text.startswith('ПР '):
+            pr_number = user_text.split()[1]  # Получаем номер ПР
+            
+            pr_info = {
+                '1': "ПР 1: Системы счисления\nЗадание: Реши самостоятельную в тетради\nСсылка: https://disk.yandex.ru/d/APQE4mDwBTSbkA",
+                '2': "ПР 2: Алгебра логики\nЗадание: Реши задачи из учебника\nСсылка: https://disk.yandex.ru/d/BPjzUvFeiSOvVw",
+                '3': "ПР 3: Интернет\nЗадание: Используй MS Visio или Draw.io\nСсылка: https://disk.yandex.ru/d/w_85PUK6rneizQ",
+                '4': "ПР 4: Защита информации\nЗадание: Используй MS Word\nСсылка: https://disk.yandex.ru/d/JycaZ67-mUxadQ",
+                '5': "ПР 5: Текстовый процессор\nЗадание: Практические работы №9-12\nСсылка: https://disk.yandex.ru/d/aiykc237nTqJBg",
+                '6': "ПР 6: Компьютерная графика\nЗадание: Используй MS Publisher\nСсылка: https://disk.yandex.ru/d/qKQ3ZFQHg59wGQ"
+            }
+            
+            if pr_number in pr_info:
+                bot.send_message(
+                    message.chat.id,
+                    pr_info[pr_number],
+                    reply_markup=get_pr_markup()  # Остаемся в меню ПР
+                )
+            else:
+                bot.send_message(
+                    message.chat.id,
+                    "ПР не найдена. Выберите ПР от 1 до 6.",
+                    reply_markup=get_pr_markup()
+                )
+
+        elif user_text == '↩️ Назад в меню':
             bot.send_message(
                 message.chat.id,
-                "Не понял ваш запрос. Воспользуйтесь клавиатурой ниже.",
+                "Вы вернулись в главное меню:",
                 reply_markup=main_markup
             )
 
