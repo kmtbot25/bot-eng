@@ -2,7 +2,6 @@
 import os
 import telebot
 from telebot import types
-import random
 from flask import Flask, request
 
 # === FLASK APP FOR RENDER ===
@@ -39,7 +38,8 @@ def get_pr_markup():
         types.KeyboardButton('ПР 3'),
         types.KeyboardButton('ПР 4'),
         types.KeyboardButton('ПР 5'),
-        types.KeyboardButton('ПР 6')
+        types.KeyboardButton('ПР 6'),
+        types.KeyboardButton('Назад в меню')  # Добавлена кнопка назад
     )
     return markup
 
@@ -91,7 +91,11 @@ def handle_all_messages(message):
 
         # Обработка кнопок с практическими работами (ПР 1-6)
         elif user_text.startswith('ПР '):
-            pr_number = user_text.split()[1]  # Получаем номер ПР (1, 2, 3, 4, 5, 6)
+            parts = user_text.split()
+            if len(parts) >= 2:
+                pr_number = parts[1]  # Получаем номер ПР (1, 2, 3, 4, 5, 6)
+            else:
+                pr_number = ''
             
             # Информация о каждой практической работе
             pr_info = {
@@ -117,7 +121,7 @@ def handle_all_messages(message):
                 )
 
         # Обработка кнопки "Назад в меню"
-        elif user_text == '↩️ Назад в меню':
+        elif user_text == 'Назад в меню':
             bot.send_message(
                 message.chat.id,
                 "Вы вернулись в главное меню:",
